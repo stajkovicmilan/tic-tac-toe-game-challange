@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { v4 as createUUID } from 'uuid';
 
 import { IDB } from './IDB';
-import { User } from '../../models/user.model';
+import { User } from '../../models/User';
 import { injectable } from "inversify";
 
 @injectable()
@@ -64,7 +64,7 @@ export class DB implements IDB {
     const user = this.db.get('users')
       .find({ token })
       .value();
-    return user;
+    return user ? user : null;
   }
 
   public async registerUser(password: string, email: string): Promise<User> {
