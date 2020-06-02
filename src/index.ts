@@ -1,15 +1,51 @@
-import { ApolloServer } from 'apollo-server';
+import "reflect-metadata";
+import express from 'express';
+import graphqlHTTP from 'express-graphql';
+import { makeExecutableSchema } from 'graphql-tools';
 
-import resolvers from './resolvers';
-import typeDefs from './type-defs';
+import { kernel, Types } from './core/dependency-injection/dependency-injection';
+import { IUsersService } from './services/IUsersService';
 
-const server = new ApolloServer({ resolvers, typeDefs });
+const app: express.Application = express();
+const port = 3000;
 
-server.listen()
-  .then(({ url }) => console.log(`Server ready at ${url}. `));
+let typeDefs: any = [`
+  type Query {
+    hello: String
+  }
+     
+  type Mutation {
+    hello(message: String) : String
+  }
+`];
 
-// Hot Module Replacement
-if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => console.log('Module disposed. '));
-}
+let helloMessage: string = 'World!';
+
+const resolvers = {
+    Query: {
+        hello: () => helloMessage
+    },
+    Mutation: {
+        hello: (_: any, helloData: any) => {
+            helloMessage = helloData.message;
+            return helloMessage;
+        }
+    }
+};
+
+// let productsService = new ProductsService();
+const usersService = kernel.get<IUsersService>(Types.IUsersService);
+// typeDefs += productsService.configTypeDefs();
+typeDefs += usersService.userTypeDefs();
+
+// productsService.configResolvers(resolvers);
+usersService.userResolvers(resolvers);
+
+app.use(
+    '/graphql',
+    graphqlHTTP({
+        schema: makeExecutableSchema({ typeDefs, resolvers }),
+        graphiql: true
+    })
+);
+app.listen(port, () => console.log(`Node Graphql API listening on port ${port}!`));
