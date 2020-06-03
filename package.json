@@ -28,6 +28,7 @@
     "express": "^4.16.4",
     "express-graphql": "^0.7.1",
     "graphql": "^14.1.1",
+    "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.4",
     "gulp": "^4.0.2",
     "gulp-clean": "^0.4.0",
@@ -40,6 +41,7 @@
     "nodemon": "^1.18.11",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.5",
+    "subscriptions-transport-ws": "^0.9.16",
     "tslint": "^6.1.2",
     "uuid": "^8.1.0"
   }

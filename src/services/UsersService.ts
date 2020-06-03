@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { PubSub } from 'graphql-subscriptions';
 
 import { IUsersService } from "./IUsersService";
 import { injectable, inject } from 'inversify';
@@ -9,6 +9,8 @@ import { IAuth } from '../core/auth/IAuth';
 
 @injectable()
 export class UsersService implements IUsersService {
+
+  public pubsub =  new PubSub();
 
   constructor(
     @inject(Types.IDB) private db: IDB,
@@ -49,13 +51,21 @@ export class UsersService implements IUsersService {
       const users: User[] = await this.db.getUsers()
       return users;
     };
-    resolvers.Mutation.user = (_root: any, _args: any, _context: any, _info: any) => {
-      const salt = crypto.randomBytes(16).toString('base64');
-      // const hash = crypto.createHmac('sha512', salt).update(user.password).digest("base64");
-      // user.password = hash;
-      // return user;
+    resolvers.Mutation.user = async (_root: any, _args: any, _context: any, _info: any) => {
+      const newUser: User = await this.db.registerUser(_args.password, _args.email);
+      this.pubsub.publish('userAdded', {
+        userAdded: newUser
+      });
+      return newUser;
     };
-
+    resolvers.Subscription.userAdded = {
+      // resolve: (_root: any, _args: any, _context: any, _info: any) => {
+      //   return this.auth.authenticated(_context.user);
+      // },
+      subscribe: (_root: any, _args: any, _context: any, _info: any) => {
+        return this.pubsub.asyncIterator('userAdded')
+      }
+    }
   }
-
+  
 }
