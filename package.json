@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "gulp",
-    "compile-test": "gulp build",
-    "clean-code": "node console/app.js"
+    "build-test": "gulp build"
   },
   "author": "Milan Stajkovic",
   "license": "ISC",
