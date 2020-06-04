@@ -22,24 +22,23 @@ export class GameService implements IGameService {
     gameTypeDefs() {
         const typeDefs = `
           type Game {
-            id: String,
-            type: String,
-            status: String,
-            winner: String,
-            firstPlayerId: String,
-            firstPlayerName: String,
-            firstPlayerMoves: [Int],
-            secondPlayerId?: String,
-            secondPlayerName?: String,
-            secondPlayerMoves: [Int],
-            gameMoves: [Int],
-            playerOnMoveId: String,
-            winningCombination?: [Int],
+            id: String
+            type: String
+            status: String
+            winner: String
+            firstPlayerId: String
+            firstPlayerName: String
+            firstPlayerMoves: [Int]
+            secondPlayerId: String
+            secondPlayerName: String
+            secondPlayerMoves: [Int]
+            gameMoves: [Int]
+            playerOnMoveId: String
+            winningCombination: [Int]
           }
           
           extend type Query {
-            getGame(
-              id: String!): Game
+            getGame(id: String!): Game
           }
 
           extend type Query {
@@ -63,8 +62,7 @@ export class GameService implements IGameService {
           }
 
           extend type Mutation {
-            joinMultiPlayerGame(
-                gameId: String!): Game
+            joinMultiPlayerGame(gameId: String!): Game
           }
 
           extend type Mutation {
@@ -80,8 +78,7 @@ export class GameService implements IGameService {
           }
 
           extend type Mutation {
-            endGame(
-                gameId: String!): Game
+            endGame(gameId: String!): Game
           }
           
           type Subscription {

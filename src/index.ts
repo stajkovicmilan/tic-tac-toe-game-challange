@@ -11,12 +11,13 @@ import { IUsersService } from './services/IUsersService';
 import { IAuth } from "./core/auth/IAuth";
 import { IGameService } from "./services/IGameService";
 
-const app: express.Application = express();
 const port = 3000;
 const subscriptionsEndpoint = `ws://localhost:${port}/subscriptions`;
+
+const app: express.Application = express();
+
 const usersService = kernel.get<IUsersService>(Types.IUsersService);
 const gameService = kernel.get<IGameService>(Types.IGameService);
-
 const auth = kernel.get<IAuth>(Types.IAuth);
 
 let typeDefs: any = `
@@ -25,7 +26,7 @@ let typeDefs: any = `
     mutation: Mutation
     subscription: Subscription
   }
-`;
+  `;
 
 const resolvers = {
   Query: {},

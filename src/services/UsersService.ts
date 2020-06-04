@@ -19,12 +19,12 @@ export class UsersService implements IUsersService {
   userTypeDefs() {
     const typeDefs = `
           type User {
-            firstName: String,
-            lastName: String,
+            firstName: String
+            lastName: String
             email: String
-            id: String,
-            token: String,
-            permissionLevel: Int,
+            id: String
+            token: String
+            permissionLevel: Int
           }
           
           type Query {
@@ -38,7 +38,8 @@ export class UsersService implements IUsersService {
              lastName: String!,
              password: String!,
              email: String!): User!
-          }`;
+          }
+          `;
     return typeDefs;
   }
 
