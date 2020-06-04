@@ -29,6 +29,18 @@
         4,
         7
       ]
+    },
+    {
+      "id": "a81b4a46-daa5-4eaf-aee0-bd53dd814c57",
+      "type": "MULTI_PLAYER",
+      "status": "ACTIVE",
+      "winner": "UNKNOWN",
+      "firstPlayerId": "1fad4172-823f-494b-a74b-f562225e6b5a",
+      "firstPlayerName": "Pera Peric",
+      "firstPlayerMoves": [],
+      "secondPlayerMoves": [],
+      "gameMoves": [],
+      "playerOnMoveId": ""
     }
   ],
   "users": [
@@ -47,6 +59,15 @@
       "permissionLevel": 1,
       "id": "1fad4172-823f-494b-a74b-f562225e6b5a",
       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmYWQ0MTcyLTgyM2YtNDk0Yi1hNzRiLWY1NjIyMjVlNmI1YSIsImlhdCI6MTU5MTI3NjE4N30.gmvsNSgFz0GJNqLZdxPjt0VTNeO-Q6n8OlE0CoZGCcc"
+    },
+    {
+      "email": "pera.peric1@pera.com",
+      "password": "$2a$10$7h/0SQ4FXRG5eX3602o3/.bD7KdzmZTrpK33OyFCAYcqSSVzB1EQ2",
+      "firstName": "pera",
+      "lastName": "peric2",
+      "permissionLevel": 1,
+      "id": "1464ea80-d437-45e7-8b0c-304481c24830",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE0NjRlYTgwLWQ0MzctNDVlNy04YjBjLTMwNDQ4MWMyNDgzMCIsImlhdCI6MTU5MTI4MTMxNn0.aQtznQwFFKK2gykK24bFy3IHcGnA2kBbDK3ZEcOjO10"
     }
   ]
 }

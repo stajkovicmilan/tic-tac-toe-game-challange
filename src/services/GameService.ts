@@ -153,7 +153,7 @@ export class GameService implements IGameService {
             const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
             const game: GameModel = await this.game.joinMultiPlayerGame(authenticatedUser, _args.gameId);
             this.pubsub.publish(GameSubTypes.PLAYER_ADDED, {
-                [GameSubTypes.PLAYER_ADDED]: game
+                subscribeToMultiplayerGamePlayerJoin: game
             });
             return game;
         };
@@ -162,7 +162,7 @@ export class GameService implements IGameService {
             const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
             const game: GameModel = await this.game.makeMoveInMultiPlayerGame(authenticatedUser, _args.gameId, _args.move);
             this.pubsub.publish(GameSubTypes.NEW_GAME_MOVE, {
-                [GameSubTypes.NEW_GAME_MOVE]: game
+                subscribeToMultiplayerGame: game
             });
             return game;
         };
@@ -172,7 +172,7 @@ export class GameService implements IGameService {
             const game: GameModel = await this.game.endGame(authenticatedUser, _args.gameId);
             if (game.type === GameType.MULTI_PLAYER) {
                 this.pubsub.publish(GameSubTypes.GAME_END, {
-                    [GameSubTypes.GAME_END]: game
+                    subscribeToMultiplayerGameEnd: game
                 });
             }
             return game;

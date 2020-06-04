@@ -29,7 +29,7 @@ export class DB implements IDB {
   protected db: any;
 
   constructor() {
-    this.adapter = new FileSync('db.json');
+    this.adapter = new FileSync('./dist/db.json');
     this.db = lowdb(this.adapter);
     this.db.defaults({
       games: [],
