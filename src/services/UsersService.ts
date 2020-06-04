@@ -3,7 +3,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { IUsersService } from "./IUsersService";
 import { injectable, inject } from 'inversify';
 import { Types } from '../core/dependency-injection';
-import { User } from '../models/User';
+import { UserModel } from '../models/UserModel';
 import { IDB } from '../core/db/IDB';
 import { IAuth } from '../core/auth/IAuth';
 
@@ -38,21 +38,26 @@ export class UsersService implements IUsersService {
             user(firstName:String,
              lastName: String,
              password: String,
-             permissionLevel: Int,
-             email: String,
-             id: String): User!
+             email: String): User!
           }`;
     return typeDefs;
   }
 
   userResolvers(resolvers: any): any {
     resolvers.Query.users = async (_root: any, _args: any, _context: any, _info: any) => {
-      const authenticatedUser: User = this.auth.authenticated(_context.user);
-      const users: User[] = await this.db.getUsers()
+      const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+      const users: UserModel[] = await this.db.getUsers()
       return users;
     };
     resolvers.Mutation.user = async (_root: any, _args: any, _context: any, _info: any) => {
-      const newUser: User = await this.db.registerUser(_args.password, _args.email);
+      let newUser: UserModel = {
+        email: _args.email ? _args.email : null,
+        password: _args.password ? _args.password : null,
+        firstName: _args.firstName ? _args.firstName : null,
+        lastName: _args.lastName ? _args.lastName : null,
+        permissionLevel: 1
+      }
+      newUser = await this.db.registerUser(newUser);
       this.pubsub.publish('userAdded', {
         userAdded: newUser
       });

@@ -5,8 +5,9 @@ import bcrypt from 'bcrypt';
 import { v4 as createUUID } from 'uuid';
 
 import { IDB } from './IDB';
-import { User } from '../../models/User';
+import { UserModel } from '../../models/UserModel';
 import { injectable } from "inversify";
+import { GameModel, GameStatus } from '../../models/GameModel';
 
 @injectable()
 export class DB implements IDB {
@@ -37,14 +38,14 @@ export class DB implements IDB {
   }
 
   // get all user's
-  public async getUsers(): Promise<User[]> {
+  public async getUsers(): Promise<UserModel[]> {
     const users = this.db.get('users')
       .value();
     return users;
   }
 
   // get a user's public data by it's id.
-  public async getUser(id: string): Promise<User> {
+  public async getUser(id: string): Promise<UserModel> {
     const users = this.db.get('users')
       .find({ id })
       .value();
@@ -52,25 +53,25 @@ export class DB implements IDB {
   }
 
   // gets a user by it's password and email.
-  public async getUserByPasswordAndEmail(password: string, email: string): Promise<User> {
+  public async getUserByPasswordAndEmail(password: string, email: string): Promise<UserModel> {
     const hash = bcrypt.hashSync(password, this.hashSalt);
     const user = this.db.get('users')
       .find({ email, password: hash })
       .value();
-    return user;
+    return user ? user : null;
   }
 
-  public async getUserByToken(token: string): Promise<User> {
+  public async getUserByToken(token: string): Promise<UserModel> {
     const user = this.db.get('users')
       .find({ token })
       .value();
     return user ? user : null;
   }
 
-  public async registerUser(password: string, email: string): Promise<User> {
+  public async registerUser(user: UserModel): Promise<UserModel> {
     const existingUser = this.db
       .get('users')
-      .find({ email })
+      .find({ email: user.email })
       .value();
 
     if (existingUser) {
@@ -78,21 +79,15 @@ export class DB implements IDB {
     }
 
     const id = createUUID();
-    const hash = bcrypt.hashSync(password, this.hashSalt);
+    const hash = bcrypt.hashSync(user.password, this.hashSalt);
     const token = jsonwebtoken.sign(
       { id },
       this.jwtSecret,
     );
 
-    const user: User = {
-      email,
-      id,
-      token,
-      password: hash,
-      firstName: '',
-      lastName: '',
-      permissionLevel: 1
-    };
+    user.id = id;
+    user.password = hash;
+    user.token = token;
 
     this.db.get('users')
       .push(user)
@@ -100,8 +95,51 @@ export class DB implements IDB {
     return user;
   }
 
-  // get all the games
-  // public async getGames(): Promise<Game[]> {}
-  // public async createGame( gameInput: Game, userId: string ): Promise<Game> {}
+  public async addGame(newGame: GameModel): Promise<GameModel> {
+    this.db.get('games')
+      .push(newGame)
+      .write();
+    return newGame;
+  }
+
+  public async getUserActiveGame(userId: string): Promise<GameModel | undefined> {
+    const games: GameModel[] = await this.db.get('games')
+      .value();
+    const activeGame: GameModel | undefined = games.find(game => {
+      return (game.firstPlayerId === userId || game.secondPlayerId === userId) && game.status === GameStatus.ACTIVE;
+    })
+    return activeGame;
+  }
+
+  public async getUserInactiveGames(userId: string): Promise<GameModel[]> {
+    const games: GameModel[] = await this.db.get('games')
+      .value();
+    const inactiveGame: GameModel[] = games.filter(game => {
+      return (game.firstPlayerId === userId || game.secondPlayerId === userId) && game.status === GameStatus.INACTIVE;
+    })
+    return inactiveGame;
+  }
+
+  public async getAllUserGames(userId: string): Promise<GameModel[]> {
+    let games: GameModel[] = await this.db.get('games')
+      .value();
+    games = games.filter(game => game.firstPlayerId === userId || game.secondPlayerId === userId)
+    return games;
+  }
+
+  public async getGameById(gameId: string): Promise<GameModel> {
+    const game = this.db.get('games')
+      .find({ id: gameId })
+      .value();
+    return game ? game : null;
+  }
+
+  public async updateGame(game: GameModel): Promise<GameModel> {
+    await this.db.get('games')
+      .find({ id: game.id })
+      .assign({ ...game })
+      .write()
+    return game;
+  }
 
 }

@@ -1,13 +1,18 @@
-import { User } from "../../models/User";
+import { UserModel } from "../../models/UserModel";
+import { GameModel } from "../../models/GameModel";
 
 export interface IDB {
 
-    getUsers(): Promise<User[]>;
-    getUser( id: string ): Promise<User>;
-    getUserByPasswordAndEmail( password: string, email: string ): Promise<User>;
-    getUserByToken( token: string ): Promise<User>;
-    registerUser( password: string, email: string ): Promise<User>;
-    // getGames(): Promise<Game[]>;
-    // createGame( gameInput: Game, userId: string ): Promise<Game>;
+    getUsers(): Promise<UserModel[]>;
+    getUser( id: string ): Promise<UserModel>;
+    getUserByPasswordAndEmail( password: string, email: string ): Promise<UserModel>;
+    getUserByToken( token: string ): Promise<UserModel>;
+    registerUser( user: UserModel ): Promise<UserModel>;
+    addGame(newGame: GameModel): Promise<GameModel>;
+    getUserActiveGame(userId: string): Promise<GameModel | undefined>;
+    getUserInactiveGames(userId: string): Promise<GameModel[]>;
+    getAllUserGames(userId: string): Promise<GameModel[]>;
+    getGameById(gameId: string): Promise<GameModel | undefined>;
+    updateGame(game: GameModel): Promise<GameModel>;
 
 }

@@ -1,8 +1,8 @@
-import { User } from "../../models/User";
+import { UserModel } from "../../models/UserModel";
 
 export interface IAuth {
 
-    getUserByTokenFromRequest( req: any ): Promise<User | null>;
-    authenticated( user: User ): User;
+    getUserByTokenFromRequest( req: any ): Promise<UserModel | null>;
+    authenticated( user: UserModel ): UserModel;
 
 }

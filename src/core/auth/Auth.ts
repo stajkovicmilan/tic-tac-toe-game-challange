@@ -3,14 +3,14 @@ import { injectable, inject } from "inversify";
 import { IAuth } from "./IAuth";
 import { Types } from "../dependency-injection";
 import { IDB } from "../db/IDB";
-import { User } from "../../models/User";
+import { UserModel } from "../../models/UserModel";
 
 @injectable()
 export class Auth implements IAuth {
 
     constructor(@inject(Types.IDB) private db: IDB) { }
 
-    public async getUserByTokenFromRequest(req: any): Promise<User | null> {
+    public async getUserByTokenFromRequest(req: any): Promise<UserModel | null> {
         let authToken = null;
         let currentUser = null;
         try {
@@ -29,7 +29,7 @@ export class Auth implements IAuth {
         return currentUser;
     }
 
-    authenticated(user: User): User {
+    authenticated(user: UserModel): UserModel {
         if (!user) {
             throw new Error(`Unauthenticated!`);
         }
