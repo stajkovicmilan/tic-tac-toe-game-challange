@@ -67,13 +67,13 @@ export class GameService implements IGameService {
 
           extend type Mutation {
             makeMoveInSinglePlayerGame(
-                gameType: String!,
+                gameId: String!,
                 move: Int!): Game
           }
 
           extend type Mutation {
             makeMoveInMultiPlayerGame(
-                gameType: String!,
+                gameId: String!,
                 move: Int!): Game
           }
 
@@ -102,10 +102,10 @@ export class GameService implements IGameService {
     }
 
     gameResolvers(resolvers: any): any {
-       
+
         resolvers.Query.getGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel | undefined = await this.db.getGameById(_context.id);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel | undefined = await this.db.getGameById(_args.id);
             if (!game) {
                 throw new Error('Game not found!');
             }
@@ -117,70 +117,70 @@ export class GameService implements IGameService {
         };
 
         resolvers.Query.availableMultiPlayerGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
             const games: GameModel[] = await this.db.availableMultiPlayerGame();
             return games;
         };
 
         resolvers.Query.getUserActiveGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel | undefined = await this.db.getUserActiveGame(_context.user && _context.user.id ? _context.user.id : null);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel | undefined = await this.db.getUserActiveGame(authenticatedUser.id ? authenticatedUser.id : '');
             return game;
         };
 
         resolvers.Query.getAllUserGames = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const games: GameModel[] = await this.db.getAllUserGames(_context.user && _context.user.id ? _context.user.id : null);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const games: GameModel[] = await this.db.getAllUserGames(authenticatedUser.id ? authenticatedUser.id : '');
             return games;
         };
 
         resolvers.Query.getUserInactiveGames = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const games: GameModel[] = await this.db.getUserInactiveGames(_context.user && _context.user.id ? _context.user.id : null);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const games: GameModel[] = await this.db.getUserInactiveGames(authenticatedUser.id ? authenticatedUser.id : '');
             return games;
         };
-        
+
         resolvers.Mutation.createGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            if (!Object.values(GameType).includes(_context.gameType)) {
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            if (!Object.values(GameType).includes(_args.gameType)) {
                 throw new Error('You did not provide right "gameType" value!');
             }
-            const newGame = await this.game.createGame(authenticatedUser, _context.gameType);
+            const newGame = await this.game.createGame(authenticatedUser, _args.gameType);
             return newGame;
         };
 
         resolvers.Mutation.joinMultiPlayerGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel = await this.game.joinMultiPlayerGame(authenticatedUser, _context.gameId);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel = await this.game.joinMultiPlayerGame(authenticatedUser, _args.gameId);
             this.pubsub.publish(GameSubTypes.PLAYER_ADDED, {
                 [GameSubTypes.PLAYER_ADDED]: game
-              });
+            });
             return game;
         };
 
         resolvers.Mutation.makeMoveInMultiPlayerGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel = await this.game.makeMoveInMultiPlayerGame(authenticatedUser, _context.gameId, _context.move);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel = await this.game.makeMoveInMultiPlayerGame(authenticatedUser, _args.gameId, _args.move);
             this.pubsub.publish(GameSubTypes.NEW_GAME_MOVE, {
                 [GameSubTypes.NEW_GAME_MOVE]: game
-              });
+            });
             return game;
         };
 
         resolvers.Mutation.endGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel = await this.game.endGame(authenticatedUser, _context.gameId);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel = await this.game.endGame(authenticatedUser, _args.gameId);
             if (game.type === GameType.MULTI_PLAYER) {
                 this.pubsub.publish(GameSubTypes.GAME_END, {
                     [GameSubTypes.GAME_END]: game
-                  });
+                });
             }
             return game;
         };
 
         resolvers.Mutation.makeMoveInSinglePlayerGame = async (_root: any, _args: any, _context: any, _info: any) => {
-            const authenticatedUser: UserModel = this.auth.authenticated(_context.user && _context.user.id ? _context.user.id : null);
-            const game: GameModel = await this.game.makeMoveInSinglePlayerGame(authenticatedUser, _context.gameId, _context.move);
+            const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
+            const game: GameModel = await this.game.makeMoveInSinglePlayerGame(authenticatedUser, _args.gameId, _args.move);
             return game;
         };
 

@@ -30,7 +30,7 @@ export class UsersService implements IUsersService {
           type Query {
             loginUser(
               password: String!,
-              email: String!): [User]
+              email: String!): User!
           }
 
           type Mutation {

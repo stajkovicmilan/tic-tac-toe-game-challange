@@ -55,7 +55,7 @@ app.use(
         user: user,
       },
       pretty: true,
-      graphiql: false,
+      graphiql: true,
       subscriptionsEndpoint: subscriptionsEndpoint
     });
   })

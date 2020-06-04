@@ -202,7 +202,7 @@ export class Game implements IGame {
     }
 
     private getAvailableMoves(allMovesPlayed: number[]): number[] {
-        return this.allMoves.filter(move => allMovesPlayed.includes(move));
+        return this.allMoves.filter(move => !allMovesPlayed.includes(move));
     }
 
 

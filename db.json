@@ -1,5 +1,36 @@
 {
-  "games": [],
+  "games": [
+    {
+      "id": "63941078-f0d5-4cb3-8793-e8c2cfacd512",
+      "type": "SINGLE_PLAYER",
+      "status": "INACTIVE",
+      "winner": "FIRST_PLAYER",
+      "firstPlayerId": "1fad4172-823f-494b-a74b-f562225e6b5a",
+      "firstPlayerName": "Pera Peric",
+      "firstPlayerMoves": [
+        1,
+        4,
+        7
+      ],
+      "secondPlayerMoves": [
+        2,
+        3
+      ],
+      "gameMoves": [
+        1,
+        2,
+        4,
+        3,
+        7
+      ],
+      "playerOnMoveId": "",
+      "winningCombination": [
+        1,
+        4,
+        7
+      ]
+    }
+  ],
   "users": [
     {
       "name": "john doe",
@@ -7,6 +38,15 @@
       "password": "$2a$10$7h/0SQ4FXRG5eX3602o3/.Ak08EEuruI..iDU01gijGxnExUJPjZW",
       "id": "ccf4107f-8c8c-40a7-8719-8df3c6294706",
       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRjNTVmYjQyLTVkZDktNDFlNS1hYzczLTdhODNlMWVmY2Y2NiIsImlhdCI6MTU0OTQ0NjY1Mn0.E1VEyE4gvv7jb151JICl6YcndVSveWpEkjTHKtOm0pA"
+    },
+    {
+      "email": "pera.perig@pera.com",
+      "password": "$2a$10$7h/0SQ4FXRG5eX3602o3/.bD7KdzmZTrpK33OyFCAYcqSSVzB1EQ2",
+      "firstName": "Pera",
+      "lastName": "Peric",
+      "permissionLevel": 1,
+      "id": "1fad4172-823f-494b-a74b-f562225e6b5a",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmYWQ0MTcyLTgyM2YtNDk0Yi1hNzRiLWY1NjIyMjVlNmI1YSIsImlhdCI6MTU5MTI3NjE4N30.gmvsNSgFz0GJNqLZdxPjt0VTNeO-Q6n8OlE0CoZGCcc"
     }
   ]
 }
