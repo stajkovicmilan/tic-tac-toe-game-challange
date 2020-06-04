@@ -1,8 +1,13 @@
 const Types = {
-    // types definitions [console_app_comment]
+
     IDB: Symbol("IDB"),
-    IUsersService: Symbol("IUsersService"),
     IAuth: Symbol("IAuth"),
+    
+    IUsersService: Symbol("IUsersService"),
+    IGameService: Symbol("IGameService"),
+
+    IGame: Symbol("IGame"),
+
 
 };
 export default Types;

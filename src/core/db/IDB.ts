@@ -14,5 +14,5 @@ export interface IDB {
     getAllUserGames(userId: string): Promise<GameModel[]>;
     getGameById(gameId: string): Promise<GameModel | undefined>;
     updateGame(game: GameModel): Promise<GameModel>;
-
+    availableMultiPlayerGame(): Promise<GameModel[]>;
 }

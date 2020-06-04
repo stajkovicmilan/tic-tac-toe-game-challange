@@ -2,7 +2,6 @@ import "reflect-metadata";
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import expressPlayground from 'graphql-playground-middleware-express';
 import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { createServer } from 'http';
@@ -10,55 +9,37 @@ import { createServer } from 'http';
 import { kernel, Types } from './core/dependency-injection';
 import { IUsersService } from './services/IUsersService';
 import { IAuth } from "./core/auth/IAuth";
+import { IGameService } from "./services/IGameService";
 
 const app: express.Application = express();
 const port = 3000;
+const subscriptionsEndpoint = `ws://localhost:${port}/subscriptions`;
 const usersService = kernel.get<IUsersService>(Types.IUsersService);
+const gameService = kernel.get<IGameService>(Types.IGameService);
+
 const auth = kernel.get<IAuth>(Types.IAuth);
 
-let typeDefs: any = [`
+let typeDefs: any = `
   schema {
     query: Query
     mutation: Mutation
     subscription: Subscription
   }
-
-  type Query {
-    hello: String
-  }
-     
-  type Mutation {
-    hello(message: String) : String
-  }
-
-  type Subscription {
-    userAdded(id: String): User
-  }
-
-  
-`];
-
-let helloMessage: string = 'World!';
+`;
 
 const resolvers = {
-  Query: {
-    hello: () => helloMessage
-  },
-  Mutation: {
-    hello: (_: any, helloData: any) => {
-      helloMessage = helloData.message;
-      return helloMessage;
-    }
-  },
+  Query: {},
+  Mutation: {},
   Subscription: {}
 };
 
-// let productsService = new ProductsService();
-// typeDefs += productsService.configTypeDefs();
+// Set "typeDef"
 typeDefs += usersService.userTypeDefs();
+typeDefs += gameService.gameTypeDefs();
 
-// productsService.configResolvers(resolvers);
+// Set "resolvers"
 usersService.userResolvers(resolvers);
+gameService.gameResolvers(resolvers);
 
 // Create schema
 const Schema = makeExecutableSchema({ typeDefs, resolvers });
@@ -70,18 +51,14 @@ app.use(
     return ({
       schema: Schema,
       context: {
-        user
+        user: user,
       },
       pretty: true,
       graphiql: false,
-      subscriptionsEndpoint: `ws://localhost:${port}/subscriptions`
+      subscriptionsEndpoint: subscriptionsEndpoint
     });
   })
 );
-// app.use(express.json()) // for parsing application/json
-// app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-app.get('/playground', expressPlayground({ endpoint: '/graphql' }));
-
 
 const server = createServer(app);
 server.listen(port, () => {
@@ -98,5 +75,5 @@ server.listen(port, () => {
     },
   );
   console.log(`Node Graphql API listening on port ${port}, and route "/graphql"!`);
-  console.log(`Node Graphql Subscriptions API listening on port ${port}, and route "/subscriptions"!`);
+  console.log(`Node Graphql Subscriptions API listening on endpoint "${subscriptionsEndpoint}"!`);
 });

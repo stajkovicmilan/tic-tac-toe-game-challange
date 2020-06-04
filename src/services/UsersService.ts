@@ -10,46 +10,44 @@ import { IAuth } from '../core/auth/IAuth';
 @injectable()
 export class UsersService implements IUsersService {
 
-  public pubsub =  new PubSub();
+  public pubsub = new PubSub();
 
   constructor(
     @inject(Types.IDB) private db: IDB,
     @inject(Types.IAuth) private auth: IAuth) { }
 
   userTypeDefs() {
-    let typeDefs = `
+    const typeDefs = `
           type User {
             firstName: String,
             lastName: String,
+            email: String
             id: String,
             token: String,
             permissionLevel: Int,
-            email: String
-          } `;
-    typeDefs += ` 
-          extend type Query {
-          users(
-            id: String): [User]
-        }
-        `;
+          }
+          
+          type Query {
+            loginUser(
+              password: String!,
+              email: String!): [User]
+          }
 
-    typeDefs += `
-          extend type Mutation {
-            user(firstName:String,
-             lastName: String,
-             password: String,
-             email: String): User!
+          type Mutation {
+            registerUser(firstName: String!,
+             lastName: String!,
+             password: String!,
+             email: String!): User!
           }`;
     return typeDefs;
   }
 
   userResolvers(resolvers: any): any {
-    resolvers.Query.users = async (_root: any, _args: any, _context: any, _info: any) => {
-      const authenticatedUser: UserModel = this.auth.authenticated(_context.user);
-      const users: UserModel[] = await this.db.getUsers()
-      return users;
+    resolvers.Query.loginUser = async (_root: any, _args: any, _context: any, _info: any) => {
+      const user: UserModel = await this.db.getUserByPasswordAndEmail(_args.password, _args.email);
+      return user;
     };
-    resolvers.Mutation.user = async (_root: any, _args: any, _context: any, _info: any) => {
+    resolvers.Mutation.registerUser = async (_root: any, _args: any, _context: any, _info: any) => {
       let newUser: UserModel = {
         email: _args.email ? _args.email : null,
         password: _args.password ? _args.password : null,
@@ -58,19 +56,8 @@ export class UsersService implements IUsersService {
         permissionLevel: 1
       }
       newUser = await this.db.registerUser(newUser);
-      this.pubsub.publish('userAdded', {
-        userAdded: newUser
-      });
       return newUser;
     };
-    resolvers.Subscription.userAdded = {
-      // resolve: (_root: any, _args: any, _context: any, _info: any) => {
-      //   return this.auth.authenticated(_context.user);
-      // },
-      subscribe: (_root: any, _args: any, _context: any, _info: any) => {
-        return this.pubsub.asyncIterator('userAdded')
-      }
-    }
   }
-  
+
 }

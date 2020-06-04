@@ -30,3 +30,9 @@ export enum GameWinner {
     DRAW_GAME = 'DRAW_GAME',
     UNKNOWN = 'UNKNOWN'
 }
+
+export enum GameSubTypes {
+    NEW_GAME_MOVE = 'newGameMove',
+    PLAYER_ADDED = 'playerAdded',
+    GAME_END = 'gameEnd'
+}

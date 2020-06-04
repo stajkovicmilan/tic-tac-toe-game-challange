@@ -7,7 +7,7 @@ import { v4 as createUUID } from 'uuid';
 import { IDB } from './IDB';
 import { UserModel } from '../../models/UserModel';
 import { injectable } from "inversify";
-import { GameModel, GameStatus } from '../../models/GameModel';
+import { GameModel, GameStatus, GameType } from '../../models/GameModel';
 
 @injectable()
 export class DB implements IDB {
@@ -126,6 +126,13 @@ export class DB implements IDB {
     games = games.filter(game => game.firstPlayerId === userId || game.secondPlayerId === userId)
     return games;
   }
+
+  public async availableMultiPlayerGame(): Promise<GameModel[]> {
+    let games: GameModel[] = await this.db.get('games')
+      .value();
+    games = games.filter(game => !game.secondPlayerId && game.type === GameType.MULTI_PLAYER && game.status === GameStatus.ACTIVE)
+    return games;
+   }
 
   public async getGameById(gameId: string): Promise<GameModel> {
     const game = this.db.get('games')
